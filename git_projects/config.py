@@ -52,6 +52,10 @@ class ConfigParser(object):
         """
         Check if the project description is valid.
         """
+        # The project exists
+        if project not in self.config:
+            raise ConfigError("Project {} doesn't exist".format(project))
+
         path = self.path(project)
         repos = self.repositories(project)
         subproj = self.subprojects(project)

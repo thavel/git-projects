@@ -5,20 +5,18 @@ Pure git commands for multi-repository projects.
 ## Requirements
 
 * Git
-* Python 3
-* [libgit2](https://libgit2.github.com)
-* [cffi](https://pypi.python.org/pypi/cffi/1.2.1)
+* Python (2 or 3)
 
 ## Getting started
 
 Install dependencies
 
 ```bash
-apt-get install git python3 libgit2  # alternatively use brew on OSX
-pip install cffi git-projects
+apt-get install git python # alternatively use brew on OSX
+pip install git-projects
 ```
 
-Create your `.gprojects` file in your `$HOME` directory.
+Create your `.gitprojects` file in your `$HOME` directory.
 
 ## Command line syntax
 
