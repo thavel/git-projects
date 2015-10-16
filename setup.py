@@ -17,5 +17,8 @@ setup(
     url='https://github.com/thavel/git-projects',
     author='Thibaut Havel',
     version=version,
-    install_requires=reqs
+    install_requires=reqs,
+    entry_points={
+        'console_scripts': ['gp = git_projects.gp:main']
+    },
 )
