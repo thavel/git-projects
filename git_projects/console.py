@@ -1,7 +1,4 @@
-from enum import Enum
-
-
-class Format(Enum):
+class Format(object):
     PURPLE = '\033[95m'
     CYAN = '\033[96m'
     DARKCYAN = '\033[36m'
@@ -15,16 +12,20 @@ class Format(Enum):
 
 
 def bold(message):
-    return Format.BOLD.value + message + Format.END.value
+    return Format.BOLD + message + Format.END
+
+
+def error(message):
+    return Format.RED + message + Format.END
 
 
 def warning(message):
-    return Format.RED.value + message + Format.END.value
+    return Format.YELLOW + message + Format.END
 
 
 def info(message):
-    return Format.YELLOW.value + message + Format.END.value
+    return Format.BLUE + message + Format.END
 
 
 def success(message):
-    return Format.GREEN.value + message + Format.END.value
+    return Format.GREEN + message + Format.END
