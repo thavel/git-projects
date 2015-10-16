@@ -105,6 +105,6 @@ class ConfigParser(object):
                 dirs.append(expanduser(repo))
 
         for proj in subproj:
-            dirs.append(self.directories(proj))
+            dirs += self.directories(proj)
 
         return dirs

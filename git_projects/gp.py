@@ -2,6 +2,7 @@
 
 from git_projects.config import ConfigParser, ConfigError
 from git_projects.console import warning
+from git_projects.command import parse_command
 from yaml.error import YAMLError
 
 
@@ -18,10 +19,17 @@ except YAMLError as e:
 
 
 def main():
-    try:
-        print(config.directories('wings'))
-    except ConfigError as e:
-        print(warning(str(e)))
+    projects, git_args = parse_command()
+    targets = list()
+
+    for project in projects:
+        try:
+            targets += config.directories(project)
+        except ConfigError as exc:
+            print(warning(str(exc)))
+            exit(1)
+
+    targets = set(targets)
 
 
 if __name__ == "__main__":
