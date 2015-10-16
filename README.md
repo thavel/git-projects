@@ -4,8 +4,8 @@ Pure git commands for multi-repository projects.
 
 ## Requirements
 
-* Git
-* Python (2 or 3)
+* [Git](http://git-scm.com)
+* [Python](https://www.python.org) (2 or 3)
 
 ## Getting started
 
@@ -24,7 +24,7 @@ Create your `.gitprojects` file in your `$HOME` directory.
 gp <projects> <git command>
 ```
 
-For instance, to perform `git fetch origin --prune` in each repository of your project `my-project`:
+Projects are pointed out using `@`. You shall not use `git` in your commands. For instance, to perform `git fetch origin --prune` in each repository of your project `my-project`:
 
 ```bash
 gp @my-project fetch origin --prune
@@ -40,6 +40,8 @@ gp @project1 @project2 pull --rebase
 
 ### Basic project
 
+Here is a basic example of a project.
+
 ```yaml
 my-project:
     path: ~/workspace/my-project
@@ -50,7 +52,11 @@ my-project:
         - my-service2
 ```
 
+In this case, `repositories` is optional, then all directories in `path` will be used as targets of your git command.
+
 ### Multi-path project
+
+You can also defined `repositories` using paths. In this case, you shall no set a `path`.
 
 ```yaml
 multipath-project:
@@ -61,6 +67,8 @@ multipath-project:
 ```
 
 ### Sub-projects
+
+You can defined `subprojects`, so that if you target a specific project, all sub-projects are targeted.
 
 ```yaml
 main-project:
