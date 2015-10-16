@@ -1,15 +1,15 @@
-from git_projects.config import ConfigParser, ConfigError
+from git_projects.config import ConfigParser
+from yaml.error import YAMLError
 
 
 GPROJECTS = '~/.gprojects'
 
 
 def main():
+    # YAMLError, FileNotFoundError
     parser = ConfigParser(GPROJECTS)
-    print(parser.projects)
-    print(parser.path('surycat-v4'))
+    print(parser.directories('my-project'))
 
 
 if __name__ == "__main__":
     main()
-
