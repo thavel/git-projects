@@ -1,3 +1,17 @@
+import sys
+
+
+def inline_print(msg):
+    sys.stdout.write(msg)
+    sys.stdout.flush()
+
+
+def pipe_lines(msg):
+    if not msg:
+        return ''
+    return '| ' + msg.replace('\n', '\n| ')[:-2] + '\n'
+
+
 class Format(object):
     PURPLE = '\033[95m'
     CYAN = '\033[96m'

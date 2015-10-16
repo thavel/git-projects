@@ -2,10 +2,11 @@
 
 from os.path import split
 
-from git_projects.config import ConfigParser, ConfigError
-from git_projects.console import success, info, warning, error, bold
-from git_projects.command import parse_command, git, GitError
 from yaml.error import YAMLError
+from git_projects.command import parse_command, git, GitError
+from git_projects.config import ConfigParser, ConfigError
+from git_projects.console import (inline_print, pipe_lines,
+                                  info, error, success, warning, bold)
 
 
 CONFIG_FILE = '~/.gitprojects'
@@ -39,17 +40,24 @@ def main():
         try:
             targets += config.directories(project)
         except ConfigError as exc:
-            fail(exc=e)
+            fail(exc=exc)
+
+    if not git_args:
+        fail("Nothing to do")
 
     # Command execution in all targets
     for target in set(targets):
         name = split(target)[1]
-        print(bold("Repository candidate: ") + info(name))
+        inline_print(bold("Target repository: ") + info(name))
 
         try:
-            git(*git_args)
+            out = git(target, *git_args)
+            print(" => {}".format(success('done')))
+            inline_print(pipe_lines(out))
         except GitError as exc:
-            print(info(str(exc)))
+            out = str(exc)
+            print(" => {}".format(warning('failed')))
+            inline_print(warning(pipe_lines(out)))
 
 
 if __name__ == "__main__":

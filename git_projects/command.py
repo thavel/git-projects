@@ -34,16 +34,14 @@ def parse_command():
     return projects, git_args + ignored_args
 
 
-def git(*args):
+def git(target, *args):
     """
     Git command opener wrapper.
     """
     cmd = ['git'] + list(args)
-    """
-    popen = Popen(cmd, close_fds=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    popen = Popen(cmd, close_fds=True, cwd=target,
+                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = popen.communicate()
     if popen.returncode != 0:
         raise GitError(err)
     return out
-    """
-    return cmd
