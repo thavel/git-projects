@@ -20,7 +20,27 @@ pip install cffi git-projects
 
 Create your `.gprojects` file in your `$HOME` directory.
 
+## Command line syntax
+
+```bash
+gp <projects> <git command>
+```
+
+For instance, to perform `git fetch origin --prune` in each repository of your project `my-project`:
+
+```bash
+gp @my-project fetch origin --prune
+```
+
+You can also provide several projects as targets of your git command:
+
+```bash
+gp @project1 @project2 pull --rebase
+```
+
 ## Configuration syntax
+
+### Basic project
 
 ```yaml
 my-project:
