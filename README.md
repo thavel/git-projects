@@ -1,6 +1,6 @@
 # git-projects
 
-[![Circle CI](https://img.shields.io/circleci/project/thavel/git-projects/master.svg)](https://circleci.com/gh/thavel/git-projects) [![pypi version](http://img.shields.io/pypi/v/git-projects.svg)](https://pypi.python.org/pypi/git-projects)
+[![Circle CI](https://img.shields.io/circleci/project/thavel/git-projects/master.svg)](https://circleci.com/gh/thavel/git-projects) [![pypi version](http://img.shields.io/pypi/v/git-projects.svg)](https://pypi.python.org/pypi/git-projects) [![pypi download week](http://img.shields.io/pypi/dw/git-projects.svg)](https://pypi.python.org/pypi/git-projects)
 
 
 Pure git commands for multi-repository projects.
