@@ -43,5 +43,5 @@ def git(target, *args):
                   stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = popen.communicate()
     if popen.returncode != 0:
-        raise GitError(err)
-    return out
+        raise GitError(err.decode('utf-8'))
+    return out.decode('utf-8')

@@ -9,7 +9,7 @@ def inline_print(msg):
 def pipe_lines(msg):
     if not msg:
         return ''
-    return '| ' + msg.replace('\n', '\n| ')[:-2] + '\n'
+    return '| {}\n'.format(msg.replace('\n', '\n| ')[:-2])
 
 
 class Format(object):
