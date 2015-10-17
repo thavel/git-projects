@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from pip.req import parse_requirements
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 with open('VERSION.txt', 'r') as v:
@@ -18,6 +18,7 @@ setup(
     author='Thibaut Havel',
     version=version,
     install_requires=reqs,
+    packages=find_packages(exclude=['tests']),
     entry_points={
         'console_scripts': ['gp = git_projects.gp:main']
     },
