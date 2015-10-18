@@ -88,3 +88,9 @@ second-project:
         - my-module1
         - my-module2
 ```
+
+## Upcoming features
+
+* Project names completion
+* Git commands completion
+* Git shortcuts: `gp @my-project --update` to do `fetch` and `pull` (with `stash` if changes).
