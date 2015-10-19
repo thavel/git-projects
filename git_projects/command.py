@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from subprocess import (Popen, PIPE)
 
-from git_projects.shortcut import SHORTCUTS
+from git_projects.shortcut import ShortcutHolder
 
 
 PROJECT_PREFIX = '@'
@@ -13,15 +13,23 @@ class GitError(Exception):
 
 
 def parse_args():
+    """
+    Build and parse command args.
+    """
     parser = ArgumentParser(description='git-projects')
     parser.add_argument(PROJECT_PREFIX, nargs='+', help='project name')
-    for shortcut in SHORTCUTS:
-        name = SHORTCUT_PREFIX + shortcut.__name__
-        parser.add_argument(name, action='store_true', help='Command shortcut')
+    for name in ShortcutHolder.REGISTRY:
+        shortcut = ShortcutHolder.REGISTRY[name]
+        option = SHORTCUT_PREFIX + shortcut.option
+        description = shortcut.description
+        parser.add_argument(option, action='store_true', help=description)
     return parser.parse_known_args()
 
 
 def parse_command():
+    """
+    Properly parsing command line arguments.
+    """
     args, ignored_args = parse_args()
     shortcut_args = args.__dict__.copy()
     del shortcut_args[PROJECT_PREFIX]

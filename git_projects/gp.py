@@ -3,7 +3,7 @@
 from os.path import split
 
 from yaml.error import YAMLError
-from git_projects.shortcut import SHORTCUTS
+from git_projects.shortcut import ShortcutHolder
 from git_projects.command import parse_command, git, GitError
 from git_projects.config import ConfigParser, ConfigError
 from git_projects.console import (inline_print, pipe_lines,
@@ -52,15 +52,23 @@ def main():
     if shortcuts_use > 1:
         fail("Only one shortcut is allowed per command")
 
-    import pdb; pdb.set_trace()
-
     # Command execution in all targets
     for target in set(targets):
-        name = split(target)[1]
-        inline_print(bold("Target repository: ") + info(name))
+        repo_name = split(target)[1]
+        inline_print(bold("Target repository: ") + info(repo_name))
 
         try:
-            out = git(target, *git_args)
+            out = str()
+            if shortcuts_use:
+                # Select the shortcut
+                name = {v: k for k, v in shortcuts.items()}[True]
+                shortcut = ShortcutHolder.REGISTRY[name]
+                # Execute all commands related to the shortcut
+                for command in shortcut.commands():
+                    out = git(target, *command)
+            else:
+                out = git(target, *git_args)
+
             print(" => {}".format(success('done')))
             inline_print(pipe_lines(out))
         except GitError as exc:

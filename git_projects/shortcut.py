@@ -1,27 +1,77 @@
-from uuid import uuid4
+from future.utils import with_metaclass
 
 
-def current():
-    yield 'rev-parse', '--abbrev-ref', 'HEAD'
+# Abstract classes
+
+class ShortcutHolder(type):
+    REGISTRY = dict()
+
+    def __new__(mcs, name, bases, attrs):
+        new_cls = type.__new__(mcs, name, bases, attrs)
+        if new_cls.option:
+            mcs.REGISTRY[new_cls.option] = new_cls
+        return new_cls
 
 
-def update():
-    yield 'fetch', 'origin', '--prune'
-    yield 'reset', '--hard'
-    yield 'pull', '--rebase'
+class Shortcut(with_metaclass(ShortcutHolder, object)):
+    option = None
+    description = None
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def commands():
+        raise NotImplementedError()
 
 
-def reset(branch):
-    tmp_branch = uuid4()[:8]
-    yield 'reset', '--hard'
-    yield 'checkout', '-b', tmp_branch
-    yield 'branch', '-D', branch
-    yield 'checkout', branch
-    yield 'branch', '-D', tmp_branch
+# Shortcut implementations
+
+class Current(Shortcut):
+    option = 'current'
+    description = 'display current branch name'
+
+    @staticmethod
+    def commands():
+        yield 'rev-parse', '--abbrev-ref', 'HEAD'
 
 
-def master():
-    return reset('master')
+class Update(Shortcut):
+    option = 'update'
+    description = 'update and rebase the current local branch with origin'
+
+    @staticmethod
+    def commands():
+        yield 'fetch', 'origin', '--prune'
+        yield 'pull', '--rebase'
 
 
-SHORTCUTS = [current, update, reset, master]
+class Reset(Shortcut):
+    option = 'reset'
+    description = 'reset the current local branch, there is no coming back'
+
+    @staticmethod
+    def commands():
+        yield 'reset', '--hard', 'origin'
+
+
+class Master(Shortcut):
+    option = 'master'
+    description = 'switch to master branch'
+
+    @staticmethod
+    def commands():
+        yield 'checkout', 'master'
+
+
+class Fresh(Shortcut):
+    option = 'fresh'
+    description = 'discard any local changes and switch to an up-to-date ' \
+                  'version of the master branch'
+
+    @staticmethod
+    def commands():
+        yield 'reset', '--hard', 'origin'
+        yield 'checkout', 'master'
+        yield 'fetch', 'origin', '--prune'
+        yield 'reset', '--hard', 'origin'
