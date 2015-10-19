@@ -3,6 +3,7 @@
 from os.path import split
 
 from yaml.error import YAMLError
+from git_projects.shortcut import SHORTCUTS
 from git_projects.command import parse_command, git, GitError
 from git_projects.config import ConfigParser, ConfigError
 from git_projects.console import (inline_print, pipe_lines,
@@ -34,7 +35,7 @@ def main():
         fail(exc=e)
 
     # Command parsing
-    projects, git_args = parse_command()
+    projects, git_args, shortcuts = parse_command()
     targets = list()
     for project in projects:
         try:
@@ -42,8 +43,16 @@ def main():
         except ConfigError as exc:
             fail(exc=exc)
 
-    if not git_args:
-        fail("Nothing to do")
+    # Command-line validation
+    shortcuts_use = sum(shortcuts.values())
+    if shortcuts_use and git_args:
+        fail("Please use shortcuts without argument")
+    if not shortcuts_use and not git_args:
+        fail("Nothing to do, bail out")
+    if shortcuts_use > 1:
+        fail("Only one shortcut is allowed per command")
+
+    import pdb; pdb.set_trace()
 
     # Command execution in all targets
     for target in set(targets):
