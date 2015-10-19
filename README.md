@@ -39,6 +39,31 @@ You can also provide several projects as targets of your git command:
 gp @project1 @project2 pull --rebase
 ```
 
+## Command shortcuts
+
+This tool also provides shortcuts for lazy users. Basically, instead of using pure git commands, you're allowed to do:
+
+```bash
+gp @my-project --<shortcut>
+```
+
+For instance, if you want to `fetch`, discard any local changes and `pull` the `origin/master` branch, you can simply do:
+
+```bash
+gp @my-project --fresh
+```
+
+The following table gives you the list of implemented shortcuts (also available through `--help`).
+
+| Shortcut    | Description                                                                        |
+|-------------|------------------------------------------------------------------------------------|
+| `--current` | display current branch name                                                        |
+| `--reset`   | reset the current local branch, there is no coming back                            |
+| `--master`  | switch to master branch                                                            |
+| `--update`  | update and rebase the current local branch with origin                             |
+| `--fresh`   | discard any local changes and switch to an up-to-date version of the master branch |
+
+
 ## Configuration syntax
 
 ### Basic project
@@ -93,4 +118,3 @@ second-project:
 
 * Project names completion
 * Git commands completion
-* Git shortcuts: `gp @my-project --update` to do `fetch` and `pull` (with `stash` if changes).
