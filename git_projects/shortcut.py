@@ -73,5 +73,6 @@ class Fresh(Shortcut):
     def commands():
         yield 'reset', '--hard', 'origin'
         yield 'checkout', 'master'
-        yield 'fetch', 'origin', '--prune'
         yield 'reset', '--hard', 'origin'
+        yield 'fetch', 'origin', '--prune'
+        yield 'pull',
