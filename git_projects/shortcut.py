@@ -1,4 +1,5 @@
 from future.utils import with_metaclass
+from uuid import uuid4
 
 
 # Abstract classes
@@ -52,7 +53,7 @@ class Reset(Shortcut):
 
     @staticmethod
     def commands():
-        yield 'reset', '--hard', 'origin'
+        yield 'reset', '--hard'
 
 
 class Master(Shortcut):
@@ -71,8 +72,11 @@ class Fresh(Shortcut):
 
     @staticmethod
     def commands():
-        yield 'reset', '--hard', 'origin'
-        yield 'checkout', 'master'
-        yield 'reset', '--hard', 'origin'
+        tmp = 'tmp' + str(uuid4())[:8]
+        yield 'reset', '--hard'
+        yield 'checkout', '-b', tmp
+        yield 'branch', '-D', 'master'
         yield 'fetch', 'origin', '--prune'
-        yield 'pull',
+        yield 'checkout', 'master'
+        yield 'branch', '-D', tmp
+        yield 'status',
