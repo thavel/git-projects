@@ -50,7 +50,7 @@ gp @my-project --<shortcut>
 For instance, if you want to `fetch`, discard any local changes and `pull` the `origin/master` branch, you can simply do:
 
 ```bash
-gp @my-project --fresh
+gp @my-project --reset
 ```
 
 The following table gives you the list of implemented shortcuts (also available through `--help`).
@@ -58,10 +58,8 @@ The following table gives you the list of implemented shortcuts (also available 
 | Shortcut    | Description                                                                        |
 |-------------|------------------------------------------------------------------------------------|
 | `--current` | display current branch name                                                        |
-| `--reset`   | reset the current local branch, there is no coming back                            |
-| `--master`  | switch to master branch                                                            |
 | `--update`  | update and rebase the current local branch with origin                             |
-| `--fresh`   | discard any local changes and switch to an up-to-date version of the master branch |
+| `--reset`   | discard any local changes and switch to an up-to-date version of the master branch |
 
 
 ## Configuration syntax

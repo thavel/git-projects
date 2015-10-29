@@ -66,6 +66,9 @@ def main():
                 # Execute all commands related to the shortcut
                 for command in shortcut.commands():
                     out = git(target, *command)
+
+                if not shortcut.output:
+                    out = ''
             else:
                 out = git(target, *git_args)
 

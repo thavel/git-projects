@@ -17,6 +17,7 @@ class ShortcutHolder(type):
 class Shortcut(with_metaclass(ShortcutHolder, object)):
     option = None
     description = None
+    output = True
 
     def __init__(self):
         pass
@@ -49,24 +50,7 @@ class Update(Shortcut):
 
 class Reset(Shortcut):
     option = 'reset'
-    description = 'reset the current local branch, there is no coming back'
-
-    @staticmethod
-    def commands():
-        yield 'reset', '--hard'
-
-
-class Master(Shortcut):
-    option = 'master'
-    description = 'switch to master branch'
-
-    @staticmethod
-    def commands():
-        yield 'checkout', 'master'
-
-
-class Fresh(Shortcut):
-    option = 'fresh'
+    output = False
     description = 'discard any local changes and switch to an up-to-date ' \
                   'version of the master branch'
 
@@ -79,4 +63,3 @@ class Fresh(Shortcut):
         yield 'fetch', 'origin', '--prune'
         yield 'checkout', 'master'
         yield 'branch', '-D', tmp
-        yield 'status',
