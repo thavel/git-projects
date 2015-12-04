@@ -8,6 +8,10 @@ class ConfigError(Exception):
     pass
 
 
+class PathError(ConfigError):
+    pass
+
+
 class ConfigParser(object):
 
     def __init__(self, file_path):
@@ -35,6 +39,12 @@ class ConfigParser(object):
         if not path:
             return
         return expanduser(path)
+
+    def origin(self, project):
+        """
+        Gives the origin attribute for a specific project.
+        """
+        return self.config[project].get('origin', None)
 
     def repositories(self, project):
         """
@@ -91,6 +101,7 @@ class ConfigParser(object):
         subproj = self.subprojects(project)
 
         dirs = list()
+        missing = list()
 
         if path and not repos:
             repos = list(filter(lambda i: '.' not in i, listdir(path)))
@@ -99,7 +110,7 @@ class ConfigParser(object):
             if path is not None:
                 rpath = join(path, repo)
                 if not exists(rpath):
-                    raise ConfigError("Path doesn't exist: {}".format(rpath))
+                    missing.append(rpath)
                 dirs.append(rpath)
             else:
                 dirs.append(expanduser(repo))
@@ -107,4 +118,6 @@ class ConfigParser(object):
         for proj in subproj:
             dirs += self.directories(proj)
 
+        if missing:
+            raise PathError(','.join(missing))
         return dirs
