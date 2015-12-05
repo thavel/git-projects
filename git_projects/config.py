@@ -1,5 +1,5 @@
 from os import listdir
-from os.path import expanduser, exists, join
+from os.path import expanduser, join, split as split_path
 
 from yaml import load
 
@@ -10,6 +10,30 @@ class ConfigError(Exception):
 
 class PathError(ConfigError):
     pass
+
+
+class Target(object):
+    """
+    Object representation of a repository targeted by git-project
+    """
+    def __init__(self, path, repo, origin):
+        clean_repo = Target.clean_path(repo)
+        if path is not None:
+            self.name = clean_repo
+            self.path = join(path, self.name)
+        else:
+            self.path = clean_repo
+            self.name = split_path(self.path)[1]
+        self.origin = origin
+
+    @property
+    def root(self):
+        return split_path(self.path)[0]
+
+    @classmethod
+    def clean_path(cls, path):
+        path = expanduser(path)
+        return path[:-1] if path[-1:] is '/' else path
 
 
 class ConfigParser(object):
@@ -74,16 +98,6 @@ class ConfigParser(object):
         if not (path or repos or subproj):
             raise ConfigError("Empty project {}".format(project))
 
-        # The path shall be valid
-        if path and not exists(path):
-            raise ConfigError("Path does't exist: {}".format(path))
-
-        # Repositories but not root path, these should be absolute paths
-        if repos and not path:
-            for repo in repos:
-                if not exists(expanduser(repo)):
-                    raise ConfigError("Path doesn't exist: {}".format(repo))
-
         # Check all sub-projects
         for proj in subproj:
             if proj not in self.projects:
@@ -99,25 +113,21 @@ class ConfigParser(object):
         path = self.path(project)
         repos = self.repositories(project)
         subproj = self.subprojects(project)
+        origin = self.origin(project)
 
-        dirs = list()
-        missing = list()
-
+        targets = list()
         if path and not repos:
             repos = list(filter(lambda i: '.' not in i, listdir(path)))
 
         for repo in repos:
-            if path is not None:
-                rpath = join(path, repo)
-                if not exists(rpath):
-                    missing.append(rpath)
-                dirs.append(rpath)
-            else:
-                dirs.append(expanduser(repo))
+            target = Target(path, repo, origin)
+            targets.append(target)
 
         for proj in subproj:
-            dirs += self.directories(proj)
+            subtargets = self.directories(proj)
+            # Inherit origin from higher project if empty
+            for target in subtargets:
+                target.origin = target.origin or origin
+            targets += subtargets
 
-        if missing:
-            raise PathError(','.join(missing))
-        return dirs
+        return targets
