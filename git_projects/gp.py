@@ -9,6 +9,11 @@ from git_projects.console import (inline_print, pipe_lines,
                                   info, error, success, warning, bold)
 
 
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
+
 CONFIG_FILE = '~/.gitprojects'
 
 
