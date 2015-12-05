@@ -4,7 +4,7 @@ import os
 from yaml.error import YAMLError
 from git_projects.shortcut import ShortcutHolder
 from git_projects.command import parse_command, git, GitError
-from git_projects.config import ConfigParser, ConfigError, PathError
+from git_projects.config import ConfigParser, ConfigError
 from git_projects.console import (inline_print, pipe_lines,
                                   info, error, success, warning, bold)
 
@@ -44,16 +44,6 @@ def main():
     for project in projects:
         try:
             targets += config.directories(project)
-        except PathError as exc:
-            origin = config.origin(project)
-            missing = str(exc).split(',')
-            for path in missing:
-                # Clone the repository if it does not exist
-                base, repo = os.path.split(path)
-                if origin:
-                    print(warning('Cloning {}...'.format(repo)))
-                    git(base, 'clone', "{}/{}.git".format(origin, repo))
-            targets += config.directories(project)
         except ConfigError as exc:
             fail(exc=exc)
 
@@ -68,8 +58,17 @@ def main():
 
     # Command execution in all targets
     for target in set(targets):
-        repo_name = os.path.split(target)[1]
-        inline_print(bold("Target repository: ") + info(repo_name))
+        inline_print("Repository: " + bold(info(target.name)) + " > ")
+
+        # Clone the repository if there is no local copy
+        if not os.path.exists(target.name) and target.origin:
+            try:
+                origin_repo = "{}/{}.git".format(target.origin, target.name)
+                git(target.root, 'clone', origin_repo)
+            except GitError:
+                pass
+            else:
+                inline_print(success('cloned') + '/')
 
         try:
             out = str()
@@ -79,23 +78,21 @@ def main():
                 shortcut = ShortcutHolder.REGISTRY[name]
                 # Execute all commands related to the shortcut
                 for command in shortcut.commands():
-                    out = git(target, *command)
+                    out = git(target.path, *command)
 
                 if not shortcut.output:
                     out = ''
             else:
-                out = git(target, *git_args)
+                out = git(target.path, *git_args)
 
-            print(" => {}".format(success('done')))
+            print(success('done'))
             inline_print(pipe_lines(out))
         except GitError as exc:
             out = str(exc)
-            print(" => {}".format(warning('failed')))
+            print(error('failed'))
             inline_print(warning(pipe_lines(out)))
         except FileNotFoundError:
-            out = "No local git repository"
-            print(" => {}".format(warning('missing')))
-            inline_print(warning(pipe_lines(out)))
+            print(warning('missing'))
 
 
 if __name__ == "__main__":

@@ -35,6 +35,12 @@ class Target(object):
         path = expanduser(path)
         return path[:-1] if path[-1:] is '/' else path
 
+    def __hash__(self):
+        return hash(self.path)
+
+    def __eq__(self, other):
+        return self.path == other.path
+
 
 class ConfigParser(object):
 
