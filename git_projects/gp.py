@@ -9,11 +9,6 @@ from git_projects.console import (inline_print, pipe_lines,
                                   info, error, success, warning, bold)
 
 
-try:
-    FileNotFoundError
-except NameError:
-    FileNotFoundError = IOError
-
 CONFIG_FILE = '~/.gitprojects'
 
 
@@ -61,14 +56,19 @@ def main():
         inline_print("Repository: " + bold(info(target.name)) + " > ")
 
         # Clone the repository if there is no local copy
-        if not os.path.exists(target.name) and target.origin:
-            try:
-                origin_repo = "{}/{}.git".format(target.origin, target.name)
-                git(target.root, 'clone', origin_repo)
-            except GitError:
-                pass
+        if not os.path.exists(target.path):
+            if target.origin:
+                try:
+                    origin_repo = "{}/{}.git".format(target.origin, target.name)
+                    git(target.root, 'clone', origin_repo)
+                except GitError:
+                    print(error('clone failed'))
+                    continue
+                else:
+                    inline_print(success('cloned') + '/')
             else:
-                inline_print(success('cloned') + '/')
+                print(warning('missing'))
+                continue
 
         try:
             out = str()
@@ -90,9 +90,7 @@ def main():
         except GitError as exc:
             out = str(exc)
             print(error('failed'))
-            inline_print(warning(pipe_lines(out)))
-        except FileNotFoundError:
-            print(warning('missing'))
+            inline_print(pipe_lines(out))
 
 
 if __name__ == "__main__":
