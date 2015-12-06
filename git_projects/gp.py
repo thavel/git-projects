@@ -9,10 +9,14 @@ from git_projects.console import (inline_print, pipe_lines,
                                   info, error, success, warning, bold)
 
 
-CONFIG_FILE = '~/.gitprojects'
+LOCAL_CONFIGS = 'gitprojects.yml', 'gitprojects.yaml', '.gitprojects'
+GLOBAL_CONFIG = '~/.gitprojects',
 
 
 def fail(msg=None, exc=None):
+    """
+    Display an error message and exit
+    """
     message = msg or str()
     if not message:
         message = "Error"
@@ -23,15 +27,30 @@ def fail(msg=None, exc=None):
     exit(1)
 
 
+def load_config():
+    """
+    Load a local or global configuration file
+    """
+    for conf_file in list(LOCAL_CONFIGS + GLOBAL_CONFIG):
+        try:
+            return ConfigParser(conf_file)
+        except EnvironmentError:
+            continue
+        except YAMLError as e:
+            fail(exc=e)
+    raise ConfigError("There is neither local nor global configuration file")
+
+
 def main():
+    """
+    Git-projects (aka gp) entrypoint
+    """
     # Configuration parsing
     config = None
     try:
-        config = ConfigParser(CONFIG_FILE)
-    except EnvironmentError:
-        fail("Configuration file {} is missing".format(CONFIG_FILE))
-    except YAMLError as e:
-        fail(exc=e)
+        config = load_config()
+    except ConfigError as exc:
+        fail(str(exc))
 
     # Command parsing
     projects, git_args, shortcuts = parse_command()

@@ -8,10 +8,6 @@ class ConfigError(Exception):
     pass
 
 
-class PathError(ConfigError):
-    pass
-
-
 class Target(object):
     """
     Object representation of a repository targeted by git-project
