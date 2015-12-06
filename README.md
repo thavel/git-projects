@@ -70,6 +70,7 @@ Here is a basic example of a project.
 
 ```yaml
 my-project:
+    origin: git@github.com:thavel
     path: ~/workspace/my-project
     repositories:
         - my-lib1
@@ -79,6 +80,9 @@ my-project:
 ```
 
 In this case, `repositories` is optional, then all directories in `path` will be used as targets of your git command.
+
+The `origin` is also optional. It is used to enable the cloning feature: if a repository does not exist at the specified path, this tool will try to clone it.
+Sub-projects inherit this parameter. So, basically, if your `.gitprojects` file is properly set, you can bootstrap the repositories of your whole project(s) with a single command (`gp @my-project fetch`, for instance).
 
 ### Multi-path project
 
@@ -114,5 +118,6 @@ second-project:
 
 ## Upcoming features
 
+* Asynchronous tasks
 * Project names completion
 * Git commands completion
