@@ -71,7 +71,7 @@ def main():
         fail("Only one shortcut is allowed per command")
 
     # Command execution in all targets
-    for target in set(targets):
+    for target in sorted(set(targets), key=lambda t: t.name):
         inline_print("Repository: " + bold(info(target.name)) + " > ")
 
         # Clone the repository if there is no local copy
