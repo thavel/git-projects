@@ -21,6 +21,8 @@ pip install git-projects
 
 Create your `.gitprojects` file in your `$HOME` directory.
 
+You can also create a `gitprojects.yml` or `.gitprojects` file in any folder you want for a local use.
+
 ## Command line syntax
 
 ```bash
