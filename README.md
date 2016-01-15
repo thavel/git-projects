@@ -62,6 +62,7 @@ The following table gives you the list of implemented shortcuts (also available 
 | `--current` | display current branch name                                                        |
 | `--update`  | update and rebase the current local branch with origin                             |
 | `--reset`   | discard any local changes and switch to an up-to-date version of the master branch |
+| `--release` | display new commits since the last tag                                             |
 
 
 ## Configuration syntax

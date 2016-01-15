@@ -63,3 +63,13 @@ class Reset(Shortcut):
         yield 'fetch', 'origin', '--prune'
         yield 'checkout', 'master'
         yield 'branch', '-D', tmp
+
+
+class Release(Shortcut):
+    option = 'release'
+    description = 'display new commits since the last tag'
+
+    @staticmethod
+    def commands():
+        yield 'log', '`git describe --abbrev=0 --tags`..HEAD', \
+              '--oneline', 'origin/master'

@@ -1,3 +1,4 @@
+import re
 from argparse import ArgumentParser
 from subprocess import (Popen, PIPE)
 
@@ -54,8 +55,30 @@ def git(target, *args):
     """
     Git command opener wrapper.
     """
-    cmd = ['git'] + list(args)
-    popen = Popen(cmd, close_fds=True, cwd=target,
+    cmd = list()
+    for arg in args:
+        regex = re.compile(r'`(?P<subargs>.+)`')
+        match = re.search(regex, arg)
+        if not match:
+            cmd.append(arg)
+            continue
+
+        subargs = match.group('subargs').split(' ')
+        output = _exec(target, subargs)
+        output = re.sub(regex, output, arg)
+        output = output.replace('\n', '')
+
+        cmd.append(output)
+
+    cmd = ['git'] + list(cmd)
+    return _exec(target, cmd)
+
+
+def _exec(target, *args):
+    """
+    Open a command as a subprocess.
+    """
+    popen = Popen(*args, close_fds=True, cwd=target,
                   stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = popen.communicate()
     if popen.returncode != 0:
