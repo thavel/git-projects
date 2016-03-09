@@ -71,6 +71,6 @@ class Release(Shortcut):
 
     @staticmethod
     def commands():
-        yield 'fetch', 'origin', '--prune'
+        yield 'fetch', '--tags'
         yield 'log', '`git describe --abbrev=0 --tags`..HEAD', \
               '--oneline', 'origin/master'
