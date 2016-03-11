@@ -3,7 +3,7 @@
 import os
 from yaml.error import YAMLError
 
-from git_projects.compatibility import run
+from git_projects.compatibility import run, schedule, coroutine
 from git_projects.shortcut import ShortcutHolder
 from git_projects.command import parse_command, git, GitError
 from git_projects.config import ConfigParser, ConfigError
@@ -43,9 +43,9 @@ def load_config():
     raise ConfigError("There is neither local nor global configuration file")
 
 
-def main():
+def init():
     """
-    Git-projects (aka gp) entrypoint
+    Get mandatory info from the projects file and the command line
     """
     # Configuration parsing
     config = None
@@ -72,6 +72,21 @@ def main():
     if shortcuts_use > 1:
         fail("Only one shortcut is allowed per command")
 
+    # Shortcut selection
+    shortcut = None
+    if shortcuts_use:
+        name = {v: k for k, v in shortcuts.items()}[True]
+        shortcut = ShortcutHolder.REGISTRY[name]
+
+    return config, projects, targets, git_args, shortcut
+
+
+def main():
+    """
+    Git-projects (aka gp) entrypoint
+    """
+    config, projects, targets, git_args, shortcut = init()
+
     # Command execution in all targets
     for target in sorted(set(targets), key=lambda t: t.name):
         inline_print("Repository: " + bold(info(target.name)) + " > ")
@@ -93,17 +108,12 @@ def main():
 
         try:
             out = str()
-            if shortcuts_use:
-                # Select the shortcut
-                name = {v: k for k, v in shortcuts.items()}[True]
-                shortcut = ShortcutHolder.REGISTRY[name]
+            if shortcut:
                 # Execute all commands related to the shortcut
                 for command in shortcut.commands():
-                    out = git(target.path, *command)
-
-                if not shortcut.output:
-                    out = ''
+                    out = git(target.path, *command) if shortcut.output else ''
             else:
+                # Execute the command passed through the parameters
                 out = git(target.path, *git_args)
 
             print(success('done'))

@@ -6,7 +6,7 @@ try:
 except ImportError:
     pass
 
-from git_projects.compatibility import coroutine
+from git_projects.compatibility import coroutine, schedule
 from git_projects.shortcut import ShortcutHolder
 
 
@@ -91,6 +91,31 @@ def _exec(target, *args):
     if proc.returncode != 0:
         raise GitError(err.decode('utf-8'))
     return out.decode('utf-8')
+
+
+@coroutine
+def async_git(target, *args):
+    """
+    Git command opener wrapper.
+    """
+    cmd = list()
+    for arg in args:
+        regex = re.compile(r'`(?P<subargs>.+)`')
+        match = re.search(regex, arg)
+        if not match:
+            cmd.append(arg)
+            continue
+
+        subargs = match.group('subargs').split(' ')
+        output = _exec(target, subargs)
+        output = re.sub(regex, output, arg)
+        output = output.replace('\n', '')
+
+        cmd.append(output)
+
+    cmd = ['git'] + list(cmd)
+    result = yield from schedule(_async_exec(target, cmd))
+    return result
 
 
 @coroutine

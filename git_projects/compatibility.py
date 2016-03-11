@@ -34,6 +34,8 @@ def run(func):
     """
     Start a main method within an asyncio loop context (if available).
     """
+    global LOOP
+
     if PYTHON >= 3:
         LOOP = asyncio.get_event_loop() or asyncio.new_event_loop()
         asyncio.set_event_loop(LOOP)
