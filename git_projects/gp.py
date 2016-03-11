@@ -2,6 +2,8 @@
 
 import os
 from yaml.error import YAMLError
+
+from git_projects.compatibility import run
 from git_projects.shortcut import ShortcutHolder
 from git_projects.command import parse_command, git, GitError
 from git_projects.config import ConfigParser, ConfigError
@@ -113,4 +115,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run(main)

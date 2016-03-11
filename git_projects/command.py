@@ -1,7 +1,12 @@
 import re
 from argparse import ArgumentParser
 from subprocess import (Popen, PIPE)
+try:
+    import asyncio
+except ImportError:
+    pass
 
+from git_projects.compatibility import coroutine
 from git_projects.shortcut import ShortcutHolder
 
 
@@ -76,11 +81,29 @@ def git(target, *args):
 
 def _exec(target, *args):
     """
-    Open a command as a subprocess.
+    Execute a command as a subprocess.
     """
-    popen = Popen(*args, close_fds=True, cwd=target,
-                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    out, err = popen.communicate()
-    if popen.returncode != 0:
+    proc = Popen(
+        *args, close_fds=True, cwd=target,
+        stdin=PIPE, stdout=PIPE, stderr=PIPE
+    )
+    out, err = proc.communicate()
+    if proc.returncode != 0:
+        raise GitError(err.decode('utf-8'))
+    return out.decode('utf-8')
+
+
+@coroutine
+def _async_exec(target, *args):
+    """
+    Execute a command as an asyncio subprocess.
+    """
+    cmd = tuple(*args)
+    proc = yield from asyncio.create_subprocess_exec(
+        *cmd, close_fds=True, cwd=target,
+        stdin=PIPE, stdout=PIPE, stderr=PIPE
+    )
+    out, err = yield from proc.communicate()
+    if proc.returncode != 0:
         raise GitError(err.decode('utf-8'))
     return out.decode('utf-8')
